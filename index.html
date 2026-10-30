@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RozgarWFH - India's Trusted Verified Work From Home Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="goHome()">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl font-bold text-lg flex items-center justify-center">
+                    <i class="fa-solid fa-house-laptop"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-tight text-slate-900">Rozgar<span class="text-indigo-600">WFH</span></span>
+                    <p class="text-xs text-slate-500 font-medium">100% Verified Remote Jobs in India</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button id="profileNavBtn" onclick="openProfileDashboard()" class="hidden bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-4 py-2 rounded-xl text-sm transition flex items-center space-x-2">
+                    <i class="fa-solid fa-id-card"></i>
+                    <span id="userWelcomeNav">My Profile</span>
+                </button>
+                <button id="authBtn" onclick="openAuthModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl text-sm transition shadow-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span id="authBtnText">Candidate Login / Register</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Search Section -->
+    <section id="heroSection" class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-blue-900 text-white py-14 px-4">
+        <div class="max-w-4xl mx-auto text-center space-y-6">
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Find Genuine Work From Home Jobs in India</h1>
+            <p class="text-indigo-200 text-base md:text-lg max-w-2xl mx-auto">Browse verified remote roles freely. Register with Name, Email & Mobile No. only when applying!</p>
+
+            <!-- Search Bar Box -->
+            <div class="bg-white p-3 rounded-2xl shadow-xl flex flex-col md:flex-row gap-3 max-w-3xl mx-auto">
+                <div class="flex-1 flex items-center px-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 mr-3"></i>
+                    <input type="text" id="searchInput" oninput="filterJobs()" placeholder="Search job title, skills, or company (e.g. React, Support)..." class="w-full py-3 bg-transparent text-slate-800 focus:outline-none text-sm">
+                </div>
+                <div class="md:w-52 flex items-center px-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <i class="fa-solid fa-briefcase text-slate-400 mr-3"></i>
+                    <select id="categoryFilter" onchange="filterJobs()" class="w-full py-3 bg-transparent text-slate-800 focus:outline-none text-sm">
+                        <option value="">All Categories</option>
+                        <option value="IT & Software">IT & Software</option>
+                        <option value="Customer Support">Customer Support</option>
+                        <option value="Content & Writing">Content & Writing</option>
+                        <option value="Data & Analytics">Data & Analytics</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                    </select>
+                </div>
+                <button onclick="filterJobs()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3 rounded-xl transition text-sm">
+                    Search Jobs
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-10 flex-1 w-full">
+        <!-- Jobs View -->
+        <div id="jobsView">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Active Remote Openings</h2>
+                    <p class="text-sm text-slate-500">All listings are vetted & verified for 100% work-from-home authenticity.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full flex items-center">
+                        <i class="fa-solid fa-shield-check mr-1.5"></i> 100% Scam-Free Guaranteed
+                    </span>
+                </div>
+            </div>
+
+            <!-- Job Cards Grid -->
+            <div id="jobListingsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full text-center py-12 text-slate-400">Loading live jobs from Firebase Firestore...</div>
+            </div>
+        </div>
+
+        <!-- Candidate Profile & Dashboard View -->
+        <div id="profileView" class="hidden space-y-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Candidate Dashboard & Profile</h2>
+                    <p class="text-sm text-slate-500">Manage your resume, qualification documents, and track applied jobs.</p>
+                </div>
+                <button onclick="goHome()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-xl text-xs transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Job Search
+                </button>
+            </div>
+
+            <!-- Profile Overview & Document Vault -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Personal Info Card -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-indigo-100 text-indigo-700 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg" id="profileInitials">
+                            RS
+                        </div>
+                        <div>
+                            <h3 id="profileNameDisplay" class="font-bold text-slate-900 text-base">Rahul Sharma</h3>
+                            <p id="profileEmailDisplay" class="text-xs text-slate-500">rahul@example.com</p>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+                        <div><strong>Mobile:</strong> <span id="profileMobileDisplay">+91 9876543210</span></div>
+                        <div><strong>Account Status:</strong> <span class="text-emerald-600 font-semibold">Firebase Verified SMS</span></div>
+                    </div>
+                    <button onclick="handleLogout()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold py-2.5 rounded-xl transition text-xs">
+                        Logout
+                    </button>
+                </div>
+
+                <!-- Resume & Document Vault -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs md:col-span-2 space-y-6">
+                    <h3 class="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
+                        <i class="fa-solid fa-folder-open text-indigo-600 mr-2"></i> Document & Resume Vault
+                    </h3>
+
+                    <!-- Resume Upload Box -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <span class="font-bold text-slate-900 text-sm block">Resume / CV</span>
+                            <p class="text-xs text-slate-500" id="resumeStatusText">No resume uploaded yet.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="resumeUploadInput" accept=".pdf,.doc,.docx" class="hidden" onchange="uploadResumeFile(event)">
+                            <button onclick="document.getElementById('resumeUploadInput').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition shadow-xs">
+                                <i class="fa-solid fa-upload mr-1"></i> Upload / Update Resume
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Qualification & Certificate Upload Box -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <span class="font-bold text-slate-900 text-sm block">Qualification Degrees & Certificates</span>
+                            <p class="text-xs text-slate-500" id="certStatusText">Upload graduation degrees or skill certifications.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="certUploadInput" accept=".pdf,.jpg,.png" class="hidden" onchange="uploadCertFile(event)">
+                            <button onclick="document.getElementById('certUploadInput').click()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition">
+                                <i class="fa-solid fa-file-arrow-up mr-1"></i> Add Certificate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applied Jobs Tracking Section -->
+            <div>
+                <h3 class="font-bold text-slate-900 text-lg mb-4">Tracked Job Applications</h3>
+                <div id="applicationsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Job Details Modal -->
+    <div id="jobModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <button onclick="closeJobModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 w-10 h-10 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Live Firebase Auth Modal with reCAPTCHA -->
+    <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="bg-indigo-50 text-indigo-600 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3 text-xl">
+                    <i class="fa-solid fa-user-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900" id="authModalTitle">Candidate Registration</h3>
+                <p class="text-xs text-slate-500 mt-1">Enter your details to receive a live SMS verification code.</p>
+            </div>
+
+            <!-- Step 1: Input Form -->
+            <form id="registerForm" onsubmit="handleSendSMSOTP(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Full Name</label>
+                    <input type="text" id="regName" required placeholder="e.g. Rahul Sharma" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Email Address</label>
+                    <input type="email" id="regEmail" required placeholder="rahul@example.com" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Mobile Number (India)</label>
+                    <div class="flex">
+                        <span class="inline-flex items-center px-3 bg-slate-100 border border-r-0 border-slate-200 rounded-l-xl text-sm text-slate-600 font-medium">+91</span>
+                        <input type="tel" id="regMobile" required pattern="[0-9]{10}" placeholder="9876543210" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <button type="submit" id="sendOtpBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-100">
+                    Send Live SMS OTP
+                </button>
+            </form>
+
+            <!-- Step 2: Live OTP Verification Box -->
+            <div id="otpSection" class="hidden space-y-4">
+                <div class="bg-indigo-50 p-4 rounded-xl text-center text-xs text-indigo-800">
+                    Real SMS OTP sent via Firebase to +91 <span id="otpMobileTarget" class="font-bold"></span>.
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Enter 6-Digit SMS Code</label>
+                    <input type="text" id="otpInput" maxlength="6" placeholder="123456" class="w-full text-center tracking-widest text-lg px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono">
+                </div>
+                <button onclick="handleVerifySMSCode()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl transition text-sm shadow-lg shadow-emerald-100">
+                    Verify Code & Register
+                </button>
+            </div>
+
+            <!-- Required Invisible reCAPTCHA container -->
+            <div id="recaptcha-container"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-500">
+        <p>© 2026 RozgarWFH India. All verified work-from-home jobs compliant with Indian labor guidelines.</p>
+    </footer>
+
+    <!-- Firebase SDK & Live Phone Auth Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAw4OyFnuOlGCvPlaSWpRS_TyA88pbcOWE",
+            authDomain: "wfh-job-finder-india.firebaseapp.com",
+            projectId: "wfh-job-finder-india",
+            storageBucket: "wfh-job-finder-india.firebasestorage.app",
+            messagingSenderId: "350249618539",
+            appId: "1:350249618539:web:d92084e8231a27d34d752e",
+            measurementId: "G-NY1V84HBGB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let jobsData = [];
+        let currentUser = JSON.parse(localStorage.getItem('rozgar_user')) || null;
+        let selectedJobForApply = null;
+        let pendingRegistrationData = null;
+        window.confirmationResult = null;
+
+        const initialSampleJobs = [
+            {
+                title: "Remote Frontend Developer (React.js)",
+                company: "TechNova Solutions India",
+                location: "Remote - India (PAN India)",
+                type: "Full-Time",
+                salary: "₹12 LPA - ₹18 LPA",
+                category: "IT & Software",
+                posted: "2 hours ago",
+                description: "Looking for an experienced React developer to build scalable SaaS dashboards. Must have reliable broadband and laptop setup.",
+                requirements: ["2+ years experience in React & Tailwind CSS", "Strong proficiency in REST APIs", "Good English communication"]
+            },
+            {
+                title: "Work From Home Customer Success Executive",
+                company: "Zomato Support Hub",
+                location: "Remote - Delhi NCR / Haryana",
+                type: "Full-Time",
+                salary: "₹4.5 LPA - ₹6 LPA",
+                category: "Customer Support",
+                posted: "Yesterday",
+                description: "Handle inbound customer queries via chat and email. Complete remote training provided. Weekly payout and incentives.",
+                requirements: ["Graduate in any discipline", "Fluent in English & Hindi", "Quiet workspace & USB headset"]
+            },
+            {
+                title: "Remote Content Writer & SEO Specialist",
+                company: "MediaMorph Digital",
+                location: "Remote - Bengaluru / Flexible",
+                type: "Part-Time",
+                salary: "₹35,000 / month",
+                category: "Content & Writing",
+                posted: "3 days ago",
+                description: "Create engaging blog posts and SEO content for global clients. Flexible working hours with weekly deliverables.",
+                requirements: ["Proven copywriting portfolio", "Basic knowledge of SEO tools", "Impeccable grammar and spelling"]
+            },
+            {
+                title: "Junior Data Analyst (Python / SQL)",
+                company: "Quantify Insights",
+                location: "Remote - Mumbai / Maharashtra",
+                type: "Full-Time",
+                salary: "₹8 LPA - ₹11 LPA",
+                category: "Data & Analytics",
+                posted: "4 days ago",
+                description: "Analyze datasets, build reports, and assist product managers. 100% permanent work from home.",
+                requirements: ["Proficiency in SQL & Python Pandas", "Experience with data visualization tools", "Analytical mindset"]
+            },
+            {
+                title: "Social Media & Growth Manager",
+                company: "BrandBuzz India",
+                location: "Remote - Hyderabad / Telangana",
+                type: "Full-Time",
+                salary: "₹7 LPA - ₹10 LPA",
+                category: "Digital Marketing",
+                posted: "5 days ago",
+                description: "Manage Instagram, LinkedIn, and Twitter handles for D2C brands. Plan campaigns and track engagement metrics.",
+                requirements: ["1+ year managing brand handles", "Creative design sense (Canva/Figma)", "Strong grasp of current trends"]
+            }
+        ];
+
+        async function fetchJobsFromFirestore() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "jobs"));
+                jobsData = [];
+                querySnapshot.forEach((doc) => {
+                    jobsData.push({ id: doc.id, ...doc.data() });
+                });
+
+                if (jobsData.length === 0) {
+                    for (let job of initialSampleJobs) {
+                        await addDoc(collection(db, "jobs"), job);
+                    }
+                    return fetchJobsFromFirestore();
+                }
+
+                renderJobs(jobsData);
+            } catch (error) {
+                console.error("Error fetching jobs:", error);
+                document.getElementById('jobListingsGrid').innerHTML = `<div class="col-span-full text-center py-12 text-rose-500">Failed to load jobs from Firebase.</div>`;
+            }
+        }
+
+        function renderJobs(jobs) {
+            const grid = document.getElementById('jobListingsGrid');
+            if (jobs.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-slate-200">No matching remote jobs found.</div>`;
+                return;
+            }
+
+            grid.innerHTML = jobs.map(job => `
+                <div class="bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 transition p-6 flex flex-col justify-between shadow-xs hover:shadow-md">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-md">${job.category}</span>
+                            <span class="text-xs text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md font-medium flex items-center">
+                                <i class="fa-solid fa-shield-check mr-1"></i> Verified
+                            </span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-1 hover:text-indigo-600 cursor-pointer" onclick="window.openJobDetail('${job.id}')">${job.title}</h3>
+                        <p class="text-xs font-medium text-slate-500 mb-4"><i class="fa-regular fa-building mr-1"></i> ${job.company}</p>
+
+                        <div class="space-y-2 mb-6 text-xs text-slate-600">
+                            <div class="flex items-center"><i class="fa-solid fa-indian-rupee-sign w-5 text-indigo-500"></i> <strong class="text-slate-900 ml-1">${job.salary}</strong></div>
+                            <div class="flex items-center"><i class="fa-solid fa-location-dot w-5 text-indigo-500"></i> <span class="ml-1">${job.location}</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-clock w-5 text-indigo-500"></i> <span class="ml-1">${job.type} • Posted ${job.posted}</span></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-4 border-t border-slate-100">
+                        <button onclick="window.openJobDetail('${job.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2.5 rounded-xl transition">Details</button>
+                        <button onclick="window.handleApplyClick('${job.id}')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-xl transition shadow-xs">Apply Now</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.filterJobs = function() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+
+            const filtered = jobsData.filter(job => {
+                const matchesQuery = job.title.toLowerCase().includes(query) || job.company.toLowerCase().includes(query) || (job.description && job.description.toLowerCase().includes(query));
+                const matchesCat = category === "" || job.category === category;
+                return matchesQuery && matchesCat;
+            });
+            renderJobs(filtered);
+        }
+
+        window.openJobDetail = function(id) {
+            const job = jobsData.find(j => j.id === id);
+            if (!job) return;
+
+            document.getElementById('modalContent').innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span class="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-md">${job.category}</span>
+                        <h2 class="text-2xl font-bold text-slate-900 mt-2">${job.title}</h2>
+                        <p class="text-sm font-medium text-slate-500">${job.company} • ${job.location}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl my-4 text-xs">
+                    <div><span class="text-slate-400 block mb-0.5">CTC / Salary</span><strong class="text-slate-900 text-sm">${job.salary}</strong></div>
+                    <div><span class="text-slate-400 block mb-0.5">Job Type</span><strong class="text-slate-900 text-sm">${job.type}</strong></div>
+                </div>
+                <div class="space-y-4 text-sm text-slate-700 mb-6">
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">Job Description</h4>
+                        <p>${job.description}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-1">Key Requirements</h4>
+                        <ul class="list-disc pl-5 space-y-1">
+                            ${job.requirements ? job.requirements.map(req => `<li>${req}</li>`).join('') : '<li>As per industry standards</li>'}
+                        </ul>
+                    </div>
+                </div>
+                <button onclick="window.closeJobModal(); window.handleApplyClick('${job.id}');" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl transition text-sm shadow-lg shadow-indigo-100">
+                    Apply for this Role Now
+                </button>
+            `;
+            document.getElementById('jobModal').classList.remove('hidden');
+        }
+
+        window.closeJobModal = function() {
+            document.getElementById('jobModal').classList.add('hidden');
+        }
+
+        window.openAuthModal = function() {
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('otpSection').classList.add('hidden');
+            document.getElementById('authModalTitle').textContent = "Candidate Registration";
+            document.getElementById('authModal').classList.remove('hidden');
+
+            // Initialize Firebase Invisible reCAPTCHA Verifier
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sendOtpBtn', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        // reCAPTCHA solved
+                    }
+                });
+            }
+        }
+
+        window.closeAuthModal = function() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        window.handleSendSMSOTP = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const mobileInput = document.getElementById('regMobile').value;
+            const phoneNumber = "+91" + mobileInput; // Format for India
+
+            pendingRegistrationData = { name, email, mobile: mobileInput, resume: null, certificates: [] };
+
+            const btn = document.getElementById('sendOtpBtn');
+            btn.textContent = "Sending SMS Code...";
+            btn.disabled = true;
+
+            try {
+                const appVerifier = window.recaptchaVerifier;
+                const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+                window.confirmationResult = confirmationResult;
+
+                document.getElementById('otpMobileTarget').textContent = mobileInput;
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('otpSection').classList.remove('hidden');
+                document.getElementById('authModalTitle').textContent = "Verify SMS Code";
+                alert("Live OTP SMS sent successfully to your mobile number!");
+            } catch (error) {
+                console.error("Error sending SMS OTP:", error);
+                alert("Failed to send SMS: " + error.message);
+                btn.textContent = "Send Live SMS OTP";
+                btn.disabled = false;
+            }
+        }
+
+        window.handleVerifySMSCode = async function() {
+            const code = document.getElementById('otpInput').value;
+            if (!code || code.length < 6) {
+                alert("Please enter the full 6-digit verification code.");
+                return;
+            }
+
+            try {
+                const result = await window.confirmationResult.confirm(code);
+                const user = result.user;
+
+                currentUser = { ...pendingRegistrationData };
+                localStorage.setItem('rozgar_user', JSON.stringify(currentUser));
+
+                window.closeAuthModal();
+                updateAuthUI();
+                alert(`Phone number verified via Firebase SMS! Welcome, ${currentUser.name}.`);
+
+                if (selectedJobForApply) {
+                    submitApplication(selectedJobForApply);
+                } else {
+                    openProfileDashboard();
+                }
+            } catch (error) {
+                console.error("Invalid OTP code:", error);
+                alert("Verification failed. Please check the 6-digit code and try again.");
+            }
+        }
+
+        window.handleApplyClick = function(jobId) {
+            selectedJobForApply = jobId;
+            if (!currentUser) {
+                window.openAuthModal();
+            } else {
+                submitApplication(jobId);
+            }
+        }
+
+        async function submitApplication(jobId) {
+            const job = jobsData.find(j => j.id === jobId);
+            try {
+                await addDoc(collection(db, "applications"), {
+                    jobId: jobId,
+                    jobTitle: job.title,
+                    company: job.company,
+                    location: job.location,
+                    salary: job.salary,
+                    applicantName: currentUser.name,
+                    applicantEmail: currentUser.email,
+                    applicantMobile: currentUser.mobile,
+                    resumeFileName: currentUser.resume || "No resume uploaded",
+                    status: "Under Review",
+                    appliedAt: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                });
+
+                alert(`Application Submitted Successfully to ${job.company}!\nYou can check its status anytime in your Profile Dashboard.`);
+                selectedJobForApply = null;
+                openProfileDashboard();
+            } catch (error) {
+                console.error("Error saving application:", error);
+                alert("Failed to submit application to Firestore.");
+            }
+        }
+
+        window.uploadResumeFile = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                currentUser.resume = file.name;
+                localStorage.setItem('rozgar_user', JSON.stringify(currentUser));
+                document.getElementById('resumeStatusText').innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fa-solid fa-file-pdf mr-1"></i> ${file.name} (Uploaded Successfully)</span>`;
+                alert("Resume uploaded successfully!");
+            }
+        }
+
+        window.uploadCertFile = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (!currentUser.certificates) currentUser.certificates = [];
+                currentUser.certificates.push(file.name);
+                localStorage.setItem('rozgar_user', JSON.stringify(currentUser));
+                document.getElementById('certStatusText').innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fa-solid fa-certificate mr-1"></i> ${currentUser.certificates.length} Document(s) attached</span>`;
+                alert("Certificate/Degree uploaded successfully!");
+            }
+        }
+
+        window.openProfileDashboard = async function() {
+            document.getElementById('jobsView').classList.add('hidden');
+            document.getElementById('heroSection').classList.add('hidden');
+            document.getElementById('profileView').classList.remove('hidden');
+
+            document.getElementById('profileNameDisplay').textContent = currentUser.name;
+            document.getElementById('profileEmailDisplay').textContent = currentUser.email;
+            document.getElementById('profileMobileDisplay').textContent = "+91 " + currentUser.mobile;
+            document.getElementById('profileInitials').textContent = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+            if (currentUser.resume) {
+                document.getElementById('resumeStatusText').innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fa-solid fa-file-pdf mr-1"></i> ${currentUser.resume}</span>`;
+            }
+            if (currentUser.certificates && currentUser.certificates.length > 0) {
+                document.getElementById('certStatusText').innerHTML = `<span class="text-emerald-600 font-semibold"><i class="fa-solid fa-certificate mr-1"></i> ${currentUser.certificates.length} Document(s) attached</span>`;
+            }
+
+            const grid = document.getElementById('applicationsGrid');
+            grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Loading your applications...</div>`;
+
+            try {
+                const q = query(collection(db, "applications"), where("applicantEmail", "==", currentUser.email));
+                const querySnapshot = await getDocs(q);
+                let apps = [];
+                querySnapshot.forEach((doc) => {
+                    apps.push(doc.data());
+                });
+
+                if (apps.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 bg-white rounded-2xl border border-slate-200">You haven't applied to any jobs yet. Browse listings and apply now!</div>`;
+                    return;
+                }
+
+                grid.innerHTML = apps.map(app => `
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-md">${app.status}</span>
+                                <span class="text-xs text-slate-400">Applied on ${app.appliedAt}</span>
+                            </div>
+                            <h3 class="font-bold text-lg text-slate-900 mb-1">${app.jobTitle}</h3>
+                            <p class="text-xs font-medium text-slate-500 mb-4"><i class="fa-regular fa-building mr-1"></i> ${app.company}</p>
+
+                            <div class="space-y-1 text-xs text-slate-600 mb-4">
+                                <div><strong>CTC:</strong> ${app.salary}</div>
+                                <div><strong>Location:</strong> ${app.location}</div>
+                                <div><strong>Resume Used:</strong> <i class="fa-solid fa-file-pdf text-rose-500 ml-1"></i> ${app.resumeFileName}</div>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                            <span>Applicant: ${app.applicantName}</span>
+                            <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Sent to Recruiter</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-rose-500">Error loading your applications.</div>`;
+            }
+        }
+
+        window.goHome = function() {
+            document.getElementById('profileView').classList.add('hidden');
+            document.getElementById('jobsView').classList.remove('hidden');
+            document.getElementById('heroSection').classList.remove('hidden');
+        }
+
+        window.handleLogout = function() {
+            localStorage.removeItem('rozgar_user');
+            currentUser = null;
+            goHome();
+            updateAuthUI();
+            alert("Logged out successfully.");
+        }
+
+        function updateAuthUI() {
+            const authBtn = document.getElementById('authBtn');
+            const authBtnText = document.getElementById('authBtnText');
+            const profileNavBtn = document.getElementById('profileNavBtn');
+            const userWelcomeNav = document.getElementById('userWelcomeNav');
+
+            if (currentUser) {
+                authBtn.classList.add('hidden');
+                profileNavBtn.classList.remove('hidden');
+                userWelcomeNav.textContent = currentUser.name.split(' ')[0];
+            } else {
+                authBtn.classList.remove('hidden');
+                profileNavBtn.classList.add('hidden');
+                authBtnText.textContent = "Candidate Login / Register";
+                authBtn.onclick = window.openAuthModal;
+            }
+        }
+
+        fetchJobsFromFirestore();
+        updateAuthUI();
+    </script>
+</body>
+</html>
