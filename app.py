@@ -1,19 +1,14 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
-import json
 
 # --- 1. FIREBASE INITIALIZATION ---
-# Connects to your existing Firebase Firestore database using secrets or fallback config
 if not firebase_admin._apps:
     try:
-        # If running locally or via Streamlit secrets
         firebase_config = dict(st.secrets["firebase"])
         cred = credentials.Certificate(firebase_config)
         firebase_admin.initialize_app(cred)
     except Exception:
-        # Fallback for local testing if secrets aren't set up yet
-        # (Make sure your firestore rules allow open read/write during development)
         pass
 
 db = firestore.client() if firebase_admin._apps else None
@@ -25,7 +20,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom Styling
 st.markdown("""
     <style>
     .main { background-color: #f8fafc; }
@@ -40,42 +34,76 @@ if "user" not in st.session_state:
 if "page" not in st.session_state:
     st.session_state.page = "jobs"
 
-# Sample initial jobs if Firestore is empty
+# Expanded Initial Sample Jobs (Including Science, Education, & Healthcare)
 INITIAL_JOBS = [
+    {
+        "title": "Senior AI Research Scientist (Remote)",
+        "company": "Bharat DeepTech Labs",
+        "location": "Remote - PAN India",
+        "type": "Full-Time",
+        "salary": "₹25 LPA - ₹40 LPA",
+        "category": "Scientists",
+        "posted": "1 hour ago",
+        "description": "Lead cutting-edge research in large language models and computer vision. PhD or Master's in Computer Science/AI required.",
+        "requirements": ["PhD or M.Tech in AI/ML", "Strong publication record", "Expertise in PyTorch / Python"]
+    },
+    {
+        "title": "Online Professor / Subject Matter Expert (Physics/Maths)",
+        "company": "Global Virtual University",
+        "location": "Remote - Flexible",
+        "type": "Part-Time",
+        "salary": "₹1.2 LPA / month",
+        "category": "Professors",
+        "posted": "3 hours ago",
+        "description": "Deliver online masterclasses, curate advanced curriculum, and mentor postgraduate students globally.",
+        "requirements": ["Postgraduate degree / Doctorate in relevant field", "5+ years teaching experience",
+                         "Excellent online presentation skills"]
+    },
+    {
+        "title": "Digital Healthcare Executive & Tele-Consultation Lead",
+        "company": "MediConnect Remote India",
+        "location": "Remote - Delhi NCR / Mumbai",
+        "type": "Full-Time",
+        "salary": "₹10 LPA - ₹15 LPA",
+        "category": "Health Executives",
+        "posted": "Yesterday",
+        "description": "Manage digital health operations, coordinate with remote medical practitioners, and oversee patient care protocols.",
+        "requirements": ["Degree in Healthcare Management / Life Sciences", "3+ years healthcare admin experience",
+                         "Strong communication skills"]
+    },
+    {
+        "title": "Senior Online Educator & Curriculum Designer",
+        "company": "EdVenture India Academy",
+        "location": "Remote - PAN India",
+        "type": "Full-Time",
+        "salary": "₹8 LPA - ₹12 LPA",
+        "category": "Teachers",
+        "posted": "2 days ago",
+        "description": "Design interactive remote learning modules and teach live online classes for senior secondary students.",
+        "requirements": ["B.Ed / M.Ed or Master's degree", "Passion for digital teaching",
+                         "Engaging storytelling and teaching style"]
+    },
     {
         "title": "Remote Frontend Developer (React.js)",
         "company": "TechNova Solutions India",
-        "location": "Remote - India (PAN India)",
+        "location": "Remote - India",
         "type": "Full-Time",
         "salary": "₹12 LPA - ₹18 LPA",
         "category": "IT & Software",
-        "posted": "2 hours ago",
-        "description": "Looking for an experienced React developer to build scalable SaaS dashboards. Must have reliable broadband and laptop setup.",
-        "requirements": ["2+ years experience in React & Tailwind CSS", "Strong proficiency in REST APIs",
-                         "Good English communication"]
+        "posted": "2 days ago",
+        "description": "Looking for an experienced React developer to build scalable SaaS dashboards. Must have reliable broadband setup.",
+        "requirements": ["2+ years experience in React & Tailwind CSS", "Strong proficiency in REST APIs"]
     },
     {
-        "title": "Work From Home Customer Success Executive",
+        "title": "Remote Customer Success Executive",
         "company": "Zomato Support Hub",
-        "location": "Remote - Delhi NCR / Haryana",
+        "location": "Remote - Haryana / Delhi",
         "type": "Full-Time",
         "salary": "₹4.5 LPA - ₹6 LPA",
         "category": "Customer Support",
-        "posted": "Yesterday",
-        "description": "Handle inbound customer queries via chat and email. Complete remote training provided. Weekly payout and incentives.",
-        "requirements": ["Graduate in any discipline", "Fluent in English & Hindi", "Quiet workspace & USB headset"]
-    },
-    {
-        "title": "Remote Content Writer & SEO Specialist",
-        "company": "MediaMorph Digital",
-        "location": "Remote - Bengaluru / Flexible",
-        "type": "Part-Time",
-        "salary": "₹35,000 / month",
-        "category": "Content & Writing",
         "posted": "3 days ago",
-        "description": "Create engaging blog posts and SEO content for global clients. Flexible working hours with weekly deliverables.",
-        "requirements": ["Proven copywriting portfolio", "Basic knowledge of SEO tools",
-                         "Impeccable grammar and spelling"]
+        "description": "Handle inbound customer queries via chat and email. Complete remote training provided.",
+        "requirements": ["Graduate in any discipline", "Fluent in English & Hindi", "Quiet workspace & headset"]
     }
 ]
 
@@ -87,7 +115,6 @@ def get_jobs_from_firestore():
         jobs_ref = db.collection("jobs")
         docs = list(jobs_ref.stream())
         if not docs:
-            # Seed initial jobs if empty
             for job in INITIAL_JOBS:
                 jobs_ref.add(job)
             return INITIAL_JOBS
@@ -195,11 +222,23 @@ elif st.session_state.page == "profile":
 elif st.session_state.page == "jobs":
     st.markdown("## 🔎 Active Remote Openings in India")
 
-    # Search and Filter bar
+    # Search and Filter bar (with expanded categories)
     search_query = st.text_input("Search job title, skills, or company...", "")
-    category = st.selectbox("Filter by Category",
-                            ["All", "IT & Software", "Customer Support", "Content & Writing", "Data & Analytics",
-                             "Digital Marketing"])
+    category = st.selectbox(
+        "Filter by Category",
+        [
+            "All",
+            "Scientists",
+            "Professors",
+            "Health Executives",
+            "Teachers",
+            "IT & Software",
+            "Customer Support",
+            "Content & Writing",
+            "Data & Analytics",
+            "Digital Marketing"
+        ]
+    )
 
     jobs = get_jobs_from_firestore()
 
@@ -233,7 +272,6 @@ elif st.session_state.page == "jobs":
                     st.rerun()
                 else:
                     user = st.session_state.user
-                    # Save application to Firestore
                     if db:
                         try:
                             db.collection("applications").add({
